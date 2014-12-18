@@ -28,11 +28,18 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.util.UrlUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -197,7 +204,37 @@ public class Application extends WebSecurityConfigurerAdapter {
          * re-fetched via stateKey upon approval.
          */
         authParams.setUsername(username);
-        authParams.setClientRedirectUrl(clientRedirectUrl);
+        try {
+            String[] splitUrl = clientRedirectUrl.split("\\?");
+            if (splitUrl.length == 2) {
+                /**
+                 * Encode the URL parameters in the clientRedirectUrl
+                 */
+                URL url = new URL(clientRedirectUrl);
+                String qString = url.getQuery();
+                String[] qParams = StringUtils.delimitedListToStringArray(qString, "&");
+                List<String> encodedParams = new ArrayList<>();
+                for (String qParam : qParams) {
+                    String[] split = qParam.split("=");
+                    if (split.length == 2) {
+                        encodedParams.add(split[0] + "=" + URLEncoder.encode(split[1], "utf-8"));
+                    } else {
+                        encodedParams.add(qParam);
+                    }
+                }
+                String encodedQString =
+                    StringUtils.collectionToDelimitedString(encodedParams, "&");
+                authParams.setClientRedirectUrl(splitUrl[0] + "?" + encodedQString);
+            } else {
+                authParams.setClientRedirectUrl(clientRedirectUrl);
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+            throw new ShimException("Could not encode clientRedirect " +
+                "URL at auth param capture");
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
         authParametersRepo.save(authParams);
         return authParams;
     }
