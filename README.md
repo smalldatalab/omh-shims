@@ -69,9 +69,8 @@ Then in a terminal,
 
 If you prefer not to use Docker,  
 
-1. You must have a [Java 7](http://www.oracle.com/technetwork/java/javase/downloads/index-jsp-138363.html/) or higher JDK installed. 
-1. A running [MongoDB](http://http://docs.mongodb.org/manual/) installation is required.
-1. [Gradle](http://www.gradle.org/) or [Maven](http://maven.apache.org/) is required to build the source code.  
+1. You must have a Java 7 or higher JDK installed. You can use either [OpenJDK](http://openjdk.java.net/install/) or the [Oracle JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
+1. A running [MongoDB](http://docs.mongodb.org/manual/) installation is required.
 1. [Maven](http://maven.apache.org/) is required to build and install Microsoft HealthVault libraries.
 1. You technically don't need to run the shim server UI, but it makes your life easier. If you're building the UI,
   1. [Node.js](http://nodejs.org/download/) is required.
@@ -85,15 +84,14 @@ Then,
   1. `sudo npm install -g grunt-cli bower`
   1. `bower install`
   1. `grunt build`
-  1. `ln -s dist ../shim-server/src/main/resources/public`
-1. Navigate to the `shim-server/src/main/resources` directory and edit the `application.yaml` file.
-1. Check that the `spring:data:mongodb:uri` parameter points to your running MongoDB instance.
+1. Navigate to the `shim-server/src/main/resources` directory and run
+  1. `ln -s ../../../../shim-server-ui/dist public`
+1. Edit the `application.yaml` file.
+  * Check that the `spring:data:mongodb:uri` parameter points to your running MongoDB instance.
   * You might need to change the host to `localhost`, for example.
 1. Follow [these instructions](#preparing-to-use-microsoft-healthvault) to install Microsoft HealthVault libraries. These libraries are
  currently required for the shim server to work.
-1. To build and run the shim server, navigate to the `shim-server` directory and 
-  * If you're using Maven, run `mvn spring-boot:run`
-  * If using Gradle, run `gradle bootRun`
+1. To build and run the shim server, navigate to the base directory and run `./gradlew shim-server:bootRun`
 1. The server should now be running on `localhost` on port 8083. You can change the port number in the `application.yaml` file.
 1. Visit `http://localhost:8083` in a browser.
                            
@@ -107,7 +105,7 @@ not yet. To add HealthVault support to the shim server,
 1. Navigate to the extracted directory in a terminal.
 1. Run `mvn install -N && mvn install --pl sdk,hv-jaxb -DskipTests`
   
-This will make the HealthVault libraries available to both Maven and Gradle.  
+This will make the HealthVault libraries available to Gradle.  
 
 #### Option 3. Building from source and running in Docker
 
@@ -135,7 +133,7 @@ Once credentials are obtained for a particular API, navigate to the settings tab
 
 (If you didn't build the UI, uncomment and replace the corresponding `clientId` and `clientSecret` placeholders in the `application.yaml` file 
 with your new credentials and restart Jetty. If you installed using Docker, you can restart Jetty using `supervisorctl restart jetty`. 
-If you installed manually, terminate your running Gradle or Maven process and restart it.)
+If you installed manually, terminate your running Gradle process and restart it.)
 
 ### Authorising access to a third-party user account from the UI
 
