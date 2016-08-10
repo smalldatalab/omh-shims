@@ -47,8 +47,14 @@ dependencies {
     compile "oauth.signpost:signpost-core:${signpostVersion}"
     compile "org.springframework.boot:spring-boot-autoconfigure"
     compile "org.springframework.data:spring-data-mongodb"
-    compile "org.springframework.security.oauth:spring-security-oauth"
-    compile "org.springframework.security.oauth:spring-security-oauth2"
+    compile "org.springframework.security.oauth:spring-security-oauth:2.0.6.RELEASE"
+    compile "org.springframework.security.oauth:spring-security-oauth2:2.0.6.RELEASE"
+
+    // Specify version of spring-security for backwards compatibility of existing tokens
+    compile group: 'org.springframework.security', name: 'spring-security-core', version: '3.2.9.RELEASE'
+    compile group: 'org.springframework.security', name: 'spring-security-config', version: '3.2.9.RELEASE'
+    compile group: 'org.springframework.security', name: 'spring-security-web', version: '3.2.9.RELEASE'
+
     compile "org.springframework:spring-web"
     compile "org.springframework:spring-webmvc"
     compile "javax.validation:validation-api:1.1.0.Final"
